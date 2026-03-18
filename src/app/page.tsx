@@ -10,13 +10,15 @@ import { Loader2, LogOut, BarChart3, Play } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProgress } from "@/hooks/useProgress";
 import { generateDailyExercises, validateAnswer } from "@/lib/engine";
+import { TENSES } from "@/lib/verbs";
 import { AuthScreen } from "@/components/AuthScreen";
 import { ExerciseCard } from "@/components/ExerciseCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { FeedbackPanel } from "@/components/FeedbackPanel";
 import { SessionSummary } from "@/components/SessionSummary";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
-import type { Exercise, ExerciseResult, ExerciseFlowState } from "@/types";
+import { TenseSelector } from "@/components/TenseSelector";
+import type { Exercise, ExerciseResult, ExerciseFlowState, Tense } from "@/types";
 
 // [DECISÃO] Views do app — "home" é o estado neutro entre sessões, permite voltar a qualquer momento
 type AppView = "home" | "exercise" | "dashboard" | "summary";
@@ -84,6 +86,8 @@ export default function Home() {
   const [view, setView] = useState<AppView>("home");
   const [todaySessions, setTodaySessions] = useState(0);
   const [sessionRestored, setSessionRestored] = useState(false);
+  // [DECISÃO] Todos os tempos selecionados por padrão — usuário pode restringir antes de iniciar
+  const [selectedTenses, setSelectedTenses] = useState<Tense[]>([...TENSES]);
 
   // ── Fetch progress on mount + restore session ──
   useEffect(() => {
@@ -133,7 +137,7 @@ export default function Home() {
 
   // [DECISÃO] Inicia nova sessão — sempre permite, sem verificação de "já fez hoje"
   function startNewSession() {
-    const daily = generateDailyExercises();
+    const daily = generateDailyExercises(new Date(), 10, selectedTenses);
     setExercises(daily.exercises);
     setCurrentIndex(0);
     setUserAnswer("");
@@ -283,9 +287,9 @@ export default function Home() {
         </header>
 
         {/* ── Contenu principal ── */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center animate-fade-in">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 animate-fade-in">
           {/* [DECISÃO] Home neutra com CTA claro — Default Effect: ação principal é começar sessão */}
-          <div className="mb-8">
+          <div className="mb-8 text-center w-full">
             <p className="text-sm text-ink-muted mb-1">
               {sessionRestored
                 ? `Session en cours — ${currentIndex + 1}/${exercises.length}`
@@ -329,6 +333,14 @@ export default function Home() {
             </>
           ) : (
             <>
+              {/* [DECISÃO] TenseSelector acima do CTA — usuário configura a sessão antes de iniciar */}
+              <div className="w-full mb-6">
+                <TenseSelector
+                  selected={selectedTenses}
+                  onChange={setSelectedTenses}
+                />
+              </div>
+
               <button
                 onClick={startNewSession}
                 className="flex items-center gap-3 py-4 px-8 rounded-2xl

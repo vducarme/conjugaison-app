@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, X, Loader2, Sparkles, BookOpen } from "lucide-react";
+import { Check, X, Loader2, Sparkles, BookOpen, Lightbulb } from "lucide-react";
 import type { Exercise, Tense } from "@/types";
 
 interface FeedbackPanelProps {
@@ -51,6 +51,19 @@ const TENSE_STRUCTURE: Record<Tense, { formula: string; example: string }> = {
     formula: "présent sans pronom (tu / nous / vous) — pas de -s pour -er à tu",
     example: "parle ! · parlons ! · parlez !",
   },
+};
+
+// [DECISÃO] Uso de cada tempo verbal — texto estático, nunca gerado por IA (risco de alucinação em regras fixas)
+// Aparece no feedback de erro abaixo da estrutura gramatical, contextualizando quando o tempo é usado na prática
+const TENSE_USAGE: Record<Tense, string> = {
+  "présent": "Actions habituelles, vérités générales ou actions en cours au moment de parler.",
+  "passé composé": "Actions terminées dans le passé, souvent à un moment précis ou avec résultat présent.",
+  "imparfait": "Descriptions, habitudes passées ou actions en cours interrompues dans le passé.",
+  "futur simple": "Actions à venir, prévisions, promesses ou hypothèses sur le futur.",
+  "conditionnel présent": "Hypothèses (si + imparfait…), politesse, désirs ou actions sous condition.",
+  "subjonctif présent": "Après verbes de volonté, doute ou émotion, et certaines conjonctions (bien que, pour que…).",
+  "plus-que-parfait": "Action passée antérieure à une autre action passée — l'«avant» dans le récit au passé.",
+  "impératif": "Donner un ordre, un conseil ou une instruction directement à quelqu'un.",
 };
 
 // [DECISÃO] Mensagens de reforço positivo variadas — evita repetição monótona de "Correct!"
@@ -188,6 +201,23 @@ export function FeedbackPanel({
             </div>
             <p className="text-sm font-medium text-ink mb-1">{structure.formula}</p>
             <p className="text-xs text-ink-muted font-serif">{structure.example}</p>
+          </div>
+        ) : null;
+      })()}
+
+      {/* ── Quand utiliser ce temps (apenas para erros) ── */}
+      {/* [DECISÃO] Estático, abaixo da estrutura — contextualiza o tempo na língua real sem custo de API */}
+      {!isCorrect && (() => {
+        const usage = TENSE_USAGE[exercise.tense];
+        return usage ? (
+          <div className="mb-3 p-4 rounded-xl border border-surface-muted bg-white">
+            <div className="flex items-center gap-2 mb-2">
+              <Lightbulb className="w-3.5 h-3.5 text-ink-faint flex-shrink-0" />
+              <p className="text-xs font-medium text-ink-faint uppercase tracking-wider">
+                Quand l&apos;utiliser
+              </p>
+            </div>
+            <p className="text-sm text-ink-muted leading-relaxed">{usage}</p>
           </div>
         ) : null;
       })()}

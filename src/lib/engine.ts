@@ -32,12 +32,14 @@ function shuffleArray<T>(arr: T[], random: () => number): T[] {
   return shuffled;
 }
 
-// [DECISÃO] Distribuição de tempos verbais equilibrada nos 10 exercícios — evita 10x "présent" por azar
-function selectTenses(count: number, random: () => number): Tense[] {
+// [DECISÃO] Distribuição de tempos verbais equilibrada nos 10 exercícios — evita 10x "présent" por azar.
+// allowedTenses filtra quais tempos entram na distribuição — se não fornecido, usa todos.
+function selectTenses(count: number, random: () => number, allowedTenses?: Tense[]): Tense[] {
+  const pool = allowedTenses && allowedTenses.length > 0 ? allowedTenses : TENSES;
   const tenses: Tense[] = [];
-  const shuffledTenses = shuffleArray(TENSES, random);
+  const shuffledTenses = shuffleArray(pool, random);
 
-  // Garantir pelo menos 1 de cada tempo antes de repetir
+  // Garantir pelo menos 1 de cada tempo permitido antes de repetir
   for (let i = 0; i < count; i++) {
     tenses.push(shuffledTenses[i % shuffledTenses.length]);
   }
@@ -109,9 +111,11 @@ export interface DailyExercises {
 }
 
 // [DECISÃO] Função principal exporta 10 exercícios para uma data — componente só chama generateDailyExercises()
+// allowedTenses: se fornecido, limita os tempos verbais da sessão à seleção do usuário
 export function generateDailyExercises(
   date: Date = new Date(),
-  count: number = 10
+  count: number = 10,
+  allowedTenses?: Tense[]
 ): DailyExercises {
   const seed = getDateSeed(date);
   const random = seededRandom(seed);
@@ -119,7 +123,7 @@ export function generateDailyExercises(
   const availableVerbs = getAvailableVerbs();
   const shuffledVerbs = shuffleArray(availableVerbs, random);
   const selectedVerbs = shuffledVerbs.slice(0, count);
-  const selectedTenses = selectTenses(count, random);
+  const selectedTenses = selectTenses(count, random, allowedTenses);
 
   const exercises: Exercise[] = selectedVerbs.map((verb, index) => {
     const tense = selectedTenses[index];
