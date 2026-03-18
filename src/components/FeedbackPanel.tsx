@@ -116,12 +116,10 @@ export function FeedbackPanel({
     }
   }
 
-  // [DECISÃO] Fallback local estruturado — mesmo sem IA, dá o mínimo: resposta certa + regra básica
+  // [DECISÃO] Fallback local minimalista — apenas indica que o diagnóstico está indisponível.
+  // A UI já mostra a resposta correta e a estrutura gramatical; o fallback não deve duplicar isso.
   function buildLocalFallback(): string {
-    const { verb, tense, pronoun, correctAnswer } = exercise;
-    // [DECISÃO] Sufixo ordinal correto: 1er, 2ème, 3ème
-    const groupLabel = verb.group === 1 ? "1er" : `${verb.group}ème`;
-    return `La forme correcte est : ${pronoun} ${correctAnswer}.\n\nLe verbe "${verb.infinitive}" est un verbe du ${groupLabel} groupe${verb.isIrregular ? " (irrégulier)" : ""}.\n\nAu ${tense}, la conjugaison suit ${verb.isIrregular ? "une forme irrégulière qu'il faut mémoriser" : "la règle standard du groupe"}.`;
+    return "Diagnostic indisponible pour le moment. Comparez votre réponse avec la forme correcte et la structure affichées ci-dessus.";
   }
 
   return (
