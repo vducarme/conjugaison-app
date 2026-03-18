@@ -6,8 +6,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, X, Loader2, Sparkles } from "lucide-react";
-import type { Exercise } from "@/types";
+import { Check, X, Loader2, Sparkles, BookOpen } from "lucide-react";
+import type { Exercise, Tense } from "@/types";
 
 interface FeedbackPanelProps {
   exercise: Exercise;
@@ -15,6 +15,43 @@ interface FeedbackPanelProps {
   isCorrect: boolean;
   onContinue: () => void;
 }
+
+// [DECISÃO] Estrutura gramatical estática por tempo — dado verificado, não gerado por IA
+// Mostrar a fórmula antes da explicação da IA ancora o erro numa regra antes do detalhe contextual (chunking)
+const TENSE_STRUCTURE: Record<Tense, { formula: string; example: string }> = {
+  "présent": {
+    formula: "radical + terminaisons du groupe",
+    example: "parler → je parle, tu parles, il parle...",
+  },
+  "passé composé": {
+    formula: "avoir / être au présent + participe passé",
+    example: "j'ai parlé · je suis allé(e)",
+  },
+  "imparfait": {
+    formula: "radical (nous, présent) + -ais, -ais, -ait, -ions, -iez, -aient",
+    example: "parler → je parlais, tu parlais, il parlait...",
+  },
+  "futur simple": {
+    formula: "infinitif + -ai, -as, -a, -ons, -ez, -ont",
+    example: "parler → je parlerai, tu parleras...",
+  },
+  "conditionnel présent": {
+    formula: "infinitif + -ais, -ais, -ait, -ions, -iez, -aient",
+    example: "parler → je parlerais, tu parlerais...",
+  },
+  "subjonctif présent": {
+    formula: "que + radical (ils, présent) + -e, -es, -e, -ions, -iez, -ent",
+    example: "parler → que je parle, que tu parles...",
+  },
+  "plus-que-parfait": {
+    formula: "avoir / être à l'imparfait + participe passé",
+    example: "j'avais parlé · j'étais allé(e)",
+  },
+  "impératif": {
+    formula: "présent sans pronom (tu / nous / vous) — pas de -s pour -er à tu",
+    example: "parle ! · parlons ! · parlez !",
+  },
+};
 
 // [DECISÃO] Mensagens de reforço positivo variadas — evita repetição monótona de "Correct!"
 const POSITIVE_MESSAGES = [
@@ -138,6 +175,24 @@ export function FeedbackPanel({
           </p>
         </div>
       )}
+
+      {/* ── Estrutura gramatical do tempo (apenas para erros) ── */}
+      {/* [DECISÃO] Acima da explicação IA — chunking: fórmula primeiro, detalhe depois */}
+      {!isCorrect && (() => {
+        const structure = TENSE_STRUCTURE[exercise.tense];
+        return structure ? (
+          <div className="mb-3 p-4 rounded-xl border border-surface-muted bg-white">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen className="w-3.5 h-3.5 text-ink-faint flex-shrink-0" />
+              <p className="text-xs font-medium text-ink-faint uppercase tracking-wider">
+                Structure — {exercise.tense}
+              </p>
+            </div>
+            <p className="text-sm font-medium text-ink mb-1">{structure.formula}</p>
+            <p className="text-xs text-ink-muted font-serif">{structure.example}</p>
+          </div>
+        ) : null;
+      })()}
 
       {/* ── Explicação detalhada (apenas para erros) ── */}
       {!isCorrect && (

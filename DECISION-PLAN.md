@@ -36,7 +36,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 4. **Input inline** — Formato "Je .... (avoir au imparfait)" com campo de texto.
 5. ~~**Teclado de acentos**~~ — **Removido.** O teclado nativo do dispositivo já fornece acentos franceses. O componente adicionava complexidade (forwardRef, cursor tracking) sem benefício real. Usuário digita acentos pelo próprio teclado.
 6. **Botão "Valider"** — Submit visível para mobile (não só Enter).
-7. **Feedback imediato** — Correto: mensagem positiva variada + micro-recompensa. Incorreto: resposta correta + explicação IA.
+7. **Feedback imediato** — Correto: mensagem positiva variada + micro-recompensa. Incorreto: resposta correta + estrutura gramatical do tempo + explicação IA.
 8. **Análise pós-sessão** — IA analisa padrões de erro e dá dicas acionáveis.
 9. **Dashboard de progresso** — Precisão por tempo verbal, por grupo, streak.
 10. **Múltiplas sessões por dia** — Sem constraint `unique(user_id, date)` no DB.
@@ -107,6 +107,7 @@ page.tsx (orquestrador)
 - **Seed diária** — `YYYYMMDD` como inteiro → Fisher-Yates shuffle. Mesmos 10 verbos ao recarregar no mesmo dia, mas sessões múltiplas são permitidas.
 - **Elision francesa** — `h` tratado como vogal (h muet). Trade-off documentado: h aspiré (haïr, heurter) não tem elision mas são raros no banco atual.
 - **Sessão em andamento em localStorage** — Persistida a cada mudança de estado (exercício, resposta, índice). Chave inclui `userId` para não misturar contas. Ao restaurar, volta a `"answering"` (não restaura estado de feedback stale). Sessões completas são limpas automaticamente. Falha de localStorage é silenciosa — não quebra o app.
+- **Estrutura gramatical por tempo — estática, não gerada por IA** — Cada tempo verbal tem uma fórmula fixa definida no código (ex: passé composé = `avoir/être au présent + participe passé`). Aparece apenas no feedback de erro, acima da explicação da IA. Decisão: dado estático verificado > IA para regras gramaticais (IA pode alucinar terminações; a fórmula estrutural é invariável).
 
 ---
 
@@ -144,6 +145,7 @@ page.tsx (orquestrador)
 - ProgressBar periférica (topo, discreta) — informa progresso sem pressionar.
 - Home neutra — sem bombardeio de métricas. Só CTA + info mínima (sessões hoje, precisão).
 - Sessão interrompida retomável — "Reprendre" na home. Sem perda de progresso, sem ansiedade.
+- **Estrutura gramatical no erro (chunking)** — Mostrar `auxiliaire + participe passé` antes da explicação da IA reduz carga cognitiva: o aprendiz ancora o erro numa regra antes de processar o detalhe contextual. Ordem: fórmula → depois explicação IA.
 
 **5. Estado padrão (Default Effect)**
 - Home abre com CTA "Commencer" — a ação padrão é começar a sessão, não navegar.
