@@ -61,9 +61,10 @@ Quel est le diagnostic de cette erreur spécifique ?`,
 
     return NextResponse.json({ explanation });
   } catch (error) {
-    console.error("Feedback API error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Feedback API error:", message);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      { error: "Erreur interne du serveur", detail: message },
       { status: 500 }
     );
   }
