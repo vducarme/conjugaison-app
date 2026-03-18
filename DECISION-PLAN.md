@@ -36,7 +36,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 4. **Input inline** — Formato "Je .... (avoir au imparfait)" com campo de texto.
 5. ~~**Teclado de acentos**~~ — **Removido.** O teclado nativo do dispositivo já fornece acentos franceses. O componente adicionava complexidade (forwardRef, cursor tracking) sem benefício real. Usuário digita acentos pelo próprio teclado.
 6. **Botão "Valider"** — Submit visível para mobile (não só Enter).
-7. **Feedback imediato** — Correto: mensagem positiva variada + micro-recompensa. Incorreto: resposta correta + estrutura gramatical do tempo + explicação IA.
+7. **Feedback imediato** — Correto: mensagem positiva variada + micro-recompensa. Incorreto: resposta correta + estrutura gramatical do tempo + **diagnóstico IA** (1-2 frases identificando a confusão específica do usuário — radical errado, auxiliar errado, confusão de tempo, etc.). A IA não repete a resposta correta nem a regra geral; a UI já exibe ambos. Prompt reescrito com `max_tokens: 120, temperature: 0.5`.
 8. **Análise pós-sessão** — IA analisa padrões de erro e dá dicas acionáveis.
 9. **Dashboard de progresso** — Precisão por tempo verbal, por grupo, streak.
 10. **Múltiplas sessões por dia** — Sem constraint `unique(user_id, date)` no DB.

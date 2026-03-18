@@ -201,12 +201,12 @@ export function FeedbackPanel({
             // [DECISÃO] Estado de carregamento com spinner — Regra 4: estado de loading explícito
             <div className="flex items-center gap-2 py-4 text-ink-muted">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Analyse de l&apos;erreur...</span>
+              <span className="text-sm">Diagnostic en cours...</span>
             </div>
           ) : explanation ? (
             <div className="p-4 rounded-xl bg-surface-muted">
               <p className="text-xs font-medium text-ink-faint uppercase tracking-wider mb-2">
-                Comprendre l&apos;erreur
+                Diagnostic
               </p>
               {/* [DECISÃO] Whitespace pre-line — preserva formatação da explicação da IA */}
               <p className="text-sm text-ink leading-relaxed whitespace-pre-line">
