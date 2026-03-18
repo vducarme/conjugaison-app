@@ -2,10 +2,16 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 // [DECISÃO] Metadata otimizada para PWA-like — mobile-first conforme Plano Fase 1
+// Ícones declarados explicitamente aqui (não via nomes reservados em src/app/) para
+// evitar que o Next.js gere entradas automáticas menores que o Android usa como legado.
 export const metadata: Metadata = {
   title: "Conjugaison — Treino diário de conjugação francesa",
   description:
     "Pratique conjugação em francês com 10 exercícios diários e feedback inteligente.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
