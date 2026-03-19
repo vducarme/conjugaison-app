@@ -6,6 +6,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -76,6 +77,16 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-8">
       {/* ── Branding mínimo ── */}
       <div className="text-center mb-10">
+        {/* [DECISÃO] Ícone do cachorro/nuvem acima do título — ancoragem visual da marca antes do gate de auth */}
+        <div className="flex justify-center mb-4">
+          <Image
+            src="/home-icon.png"
+            alt="Conjugaison"
+            width={96}
+            height={96}
+            priority
+          />
+        </div>
         {/* [DECISÃO] Tipografia serif para o nome do app — coerente com a direção estética "língua, cultura" */}
         <h1 className="font-serif text-3xl font-semibold text-ink mb-2">
           Conjugaison
