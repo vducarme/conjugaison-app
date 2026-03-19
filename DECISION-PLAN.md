@@ -150,6 +150,8 @@ page.tsx (orquestrador)
 - Sessão interrompida retomável — "Reprendre" na home. Sem perda de progresso, sem ansiedade.
 - **Estrutura gramatical no erro (chunking)** — Mostrar `auxiliaire + participe passé` antes da explicação da IA reduz carga cognitiva: o aprendiz ancora o erro numa regra antes de processar o detalhe contextual. Ordem no erro: estrutura → quando usar → diagnóstico IA.
 - **TenseSelector na home (controle sem atrito)** — Pills compactas com todos os tempos selecionados por padrão. Usuário que não quer configurar nada ignora e clica "Commencer". Usuário que quer focar num tempo específico ajusta sem sair da tela.
+- **TenseSelector chip — estilo selecionado secundário** — Estado selecionado usa `border-accent text-accent bg-accent/[0.07]` (borda + texto indigo, fundo indigo 7% de opacidade) em vez de `bg-accent text-white` (fundo sólido indigo). Razão: o CTA "Commencer/Reprendre" deve ser o único elemento com fill de cor sólida na home (Von Restorff + hierarquia primário/secundário). Chips selecionados precisam ser distinguíveis mas não competir com o botão principal.
+- **"Recommencer" volta à home** — Ao clicar "Recommencer une nouvelle session" no `SessionSummary`, o estado vai para `"home"` (`setView("home")`) em vez de chamar `startNewSession()` diretamente. Razão: permite ao usuário reconfigurar os tempos verbais antes de iniciar a próxima sessão — ciclo mais claro (home → configurar → sessão).
 
 **5. Estado padrão (Default Effect)**
 - Home abre com CTA "Commencer" — a ação padrão é começar a sessão, não navegar.

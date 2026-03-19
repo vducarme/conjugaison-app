@@ -68,13 +68,16 @@ export function TenseSelector({ selected, onChange }: TenseSelectorProps) {
             <button
               key={tense}
               onClick={() => toggle(tense)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 border
                 ${isSelected
-                  ? "bg-accent text-white"
-                  : "bg-surface-muted text-ink-muted hover:bg-surface-card hover:text-ink"
+                  // [DECISÃO] Selecionado: borda + texto accent, fundo levíssimo — visual secundário.
+                  // bg-accent/8 é ~5% opacidade do indigo, suficiente para diferenciar sem peso de botão primário.
+                  // Evita competição com o CTA "Commencer" que é o único elemento com fundo sólido escuro.
+                  ? "border-accent text-accent bg-accent/[0.07]"
+                  : "border-transparent bg-surface-muted text-ink-muted hover:bg-surface-card hover:text-ink"
                 }
                 ${selected.length === 1 && isSelected
-                  ? "opacity-60 cursor-not-allowed"
+                  ? "opacity-50 cursor-not-allowed"
                   : "active:scale-[0.96]"
                 }`}
               aria-pressed={isSelected}

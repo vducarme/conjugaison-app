@@ -322,9 +322,11 @@ export default function Home() {
               </button>
               <button
                 onClick={() => {
+                  // [DECISÃO] Não inicia sessão direto — volta para home para o usuário
+                  // poder reconfigurar os tempos verbais antes de começar nova sessão
                   clearSessionFromStorage();
                   setSessionRestored(false);
-                  startNewSession();
+                  setView("home");
                 }}
                 className="mt-4 text-sm text-ink-muted hover:text-ink transition-colors"
               >
