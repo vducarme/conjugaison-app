@@ -87,7 +87,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 ### Árvore de componentes
 ```
 page.tsx (orquestrador)
-├── AuthScreen              # Login/registro
+├── AuthScreen              # Login/registro — ícone 96×96 + título + formulário
 ├── Home view               # Estado neutro
 │   ├── TenseSelector       # Pills para selecionar tempos a treinar (todos por padrão)
 │   ├── "Reprendre"         # CTA primário se há sessão salva (localStorage)
@@ -152,6 +152,7 @@ page.tsx (orquestrador)
 - **TenseSelector na home (controle sem atrito)** — Pills compactas com todos os tempos selecionados por padrão. Usuário que não quer configurar nada ignora e clica "Commencer". Usuário que quer focar num tempo específico ajusta sem sair da tela.
 - **TenseSelector chip — estilo selecionado secundário** — Estado selecionado usa `border-accent text-accent bg-accent/[0.07]` (borda + texto indigo, fundo indigo 7% de opacidade) em vez de `bg-accent text-white` (fundo sólido indigo). Razão: o CTA "Commencer/Reprendre" deve ser o único elemento com fill de cor sólida na home (Von Restorff + hierarquia primário/secundário). Chips selecionados precisam ser distinguíveis mas não competir com o botão principal.
 - **"Recommencer" volta à home** — Ao clicar "Recommencer une nouvelle session" no `SessionSummary`, o estado vai para `"home"` (`setView("home")`) em vez de chamar `startNewSession()` diretamente. Razão: permite ao usuário reconfigurar os tempos verbais antes de iniciar a próxima sessão — ciclo mais claro (home → configurar → sessão).
+- **Ícone na AuthScreen** — `home-icon.png` (ilustração cachorro/nuvem, 96×96) renderizado com `next/image priority` acima do título "Conjugaison". Razão: ancoragem visual da marca antes do gate de autenticação; `priority` garante LCP rápido nesta tela de entrada. Arquivo em `public/home-icon.png`.
 
 **5. Estado padrão (Default Effect)**
 - Home abre com CTA "Commencer" — a ação padrão é começar a sessão, não navegar.
