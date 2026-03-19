@@ -17,7 +17,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 ### O que foi excluído explicitamente
 - Google OAuth: botão existe no código mas está oculto (`{false && (...)}`) até credenciais serem configuradas.
 - Limite de uma sessão por dia: removido. Usuário faz quantas sessões quiser.
-- Criação de conta social: apenas email/senha por enquanto.
+- Toggle login/signup: removido. Fluxo unificado — um único botão "Continuer" tenta login e, se o usuário não existe, cria a conta automaticamente.
 
 ### Perfil do usuário
 - Aprendiz intermediário de francês.
@@ -153,6 +153,7 @@ page.tsx (orquestrador)
 - **TenseSelector chip — estilo selecionado secundário** — Estado selecionado usa `border-accent text-accent bg-accent/[0.07]` (borda + texto indigo, fundo indigo 7% de opacidade) em vez de `bg-accent text-white` (fundo sólido indigo). Razão: o CTA "Commencer/Reprendre" deve ser o único elemento com fill de cor sólida na home (Von Restorff + hierarquia primário/secundário). Chips selecionados precisam ser distinguíveis mas não competir com o botão principal.
 - **"Recommencer" volta à home** — Ao clicar "Recommencer une nouvelle session" no `SessionSummary`, o estado vai para `"home"` (`setView("home")`) em vez de chamar `startNewSession()` diretamente. Razão: permite ao usuário reconfigurar os tempos verbais antes de iniciar a próxima sessão — ciclo mais claro (home → configurar → sessão).
 - **Ícone na AuthScreen** — `home-icon.png` (ilustração cachorro/nuvem, 96×96) renderizado com `next/image priority` acima do título "Conjugaison". Razão: ancoragem visual da marca antes do gate de autenticação; `priority` garante LCP rápido nesta tela de entrada. Arquivo em `public/home-icon.png`.
+- **Fluxo de auth unificado (login + signup automático)** — Um único botão "Continuer". Sequência: `signInWithPassword` → se erro "Invalid login credentials", tenta `signUp` → se signup OK, usuário era novo (conta criada + sessão iniciada); se signup retorna "already registered", usuário existe mas a senha está errada (`"Mot de passe incorrect."`); outros erros de signup (senha fraca, email inválido) mostram mensagem traduzida. Razão: o erro do Supabase é idêntico para "usuário inexistente" e "senha errada" — a tentativa de signup é o único jeito confiável de distinguir os dois casos sem endpoint adicional.
 
 **5. Estado padrão (Default Effect)**
 - Home abre com CTA "Commencer" — a ação padrão é começar a sessão, não navegar.

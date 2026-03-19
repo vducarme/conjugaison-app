@@ -15,7 +15,6 @@ interface AuthScreenProps {
 }
 
 export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,37 +39,53 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     }
   }
 
+  // [DECISÃO] Fluxo unificado: tenta login → se usuário não existe, cria conta automaticamente.
+  // O usuário nunca precisa escolher entre "login" e "cadastro" — zero fricção.
+  // Sequência: signInWithPassword → se "Invalid login credentials", tenta signUp →
+  //   se signUp falhar também (senha fraca, email inválido), mostra erro real.
   async function handleEmailAuth() {
     setLoading(true);
     setError(null);
     try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (!signInError) {
+        // Login bem-sucedido
+        onAuthSuccess();
+        return;
       }
-      onAuthSuccess();
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Une erreur est survenue.";
-      // [DECISÃO] Mensagens de erro em francês — coerência linguística com o app
-      if (message.includes("Invalid login")) {
-        setError("Email ou mot de passe incorrect.");
-      } else if (message.includes("already registered")) {
-        setError("Cet email est déjà utilisé. Connectez-vous.");
+
+      // [DECISÃO] "Invalid login credentials" é o código do Supabase tanto para senha errada
+      // quanto para usuário inexistente. Tentamos signup para distinguir os casos:
+      // - Se signup OK → usuário era novo, conta criada e sessão iniciada.
+      // - Se signup falha com "already registered" → usuário existe mas senha está errada.
+      // - Se signup falha por outro motivo (senha fraca, email inválido) → mostra esse erro.
+      if (signInError.message.includes("Invalid login credentials")) {
+        const { error: signUpError } = await supabase.auth.signUp({ email, password });
+
+        if (!signUpError) {
+          onAuthSuccess();
+          return;
+        }
+
+        if (signUpError.message.includes("already registered") || signUpError.message.includes("User already registered")) {
+          setError("Mot de passe incorrect.");
+        } else {
+          setError(translateError(signUpError.message));
+        }
       } else {
-        setError(message);
+        setError(translateError(signInError.message));
       }
     } finally {
       setLoading(false);
     }
+  }
+
+  function translateError(message: string): string {
+    if (message.includes("Password should be at least")) return "Le mot de passe doit contenir au moins 6 caractères.";
+    if (message.includes("Unable to validate email")) return "Adresse email invalide.";
+    if (message.includes("Email rate limit")) return "Trop de tentatives. Réessayez dans quelques minutes.";
+    return "Une erreur est survenue. Réessayez.";
   }
 
   return (
@@ -197,26 +212,11 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         >
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-          ) : mode === "login" ? (
-            "Se connecter"
           ) : (
-            "Créer un compte"
+            "Continuer"
           )}
         </button>
       </form>
-
-      {/* ── Toggle login/signup ── */}
-      <button
-        onClick={() => {
-          setMode(mode === "login" ? "signup" : "login");
-          setError(null);
-        }}
-        className="mt-4 text-sm text-ink-muted hover:text-accent transition-colors"
-      >
-        {mode === "login"
-          ? "Pas de compte ? Créer un compte"
-          : "Déjà un compte ? Se connecter"}
-      </button>
     </div>
   );
 }
