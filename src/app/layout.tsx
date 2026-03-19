@@ -5,7 +5,7 @@ import "./globals.css";
 // Ícones declarados explicitamente aqui (não via nomes reservados em src/app/) para
 // evitar que o Next.js gere entradas automáticas menores que o Android usa como legado.
 export const metadata: Metadata = {
-  title: "Conjugaison — Treino diário de conjugação francesa",
+  title: "Conjuju — Treino diário de conjugação francesa",
   description:
     "Pratique conjugação em francês com 10 exercícios diários e feedback inteligente.",
   icons: {

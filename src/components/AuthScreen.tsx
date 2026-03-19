@@ -81,7 +81,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         <div className="flex justify-center mb-4">
           <Image
             src="/home-icon.png"
-            alt="Conjugaison"
+            alt="Conjuju"
             width={96}
             height={96}
             priority
@@ -89,7 +89,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         </div>
         {/* [DECISÃO] Tipografia serif para o nome do app — coerente com a direção estética "língua, cultura" */}
         <h1 className="font-serif text-3xl font-semibold text-ink mb-2">
-          Conjugaison
+          Conjuju
         </h1>
         <p className="text-sm text-ink-muted">
           10 verbes par jour. Progressez chaque jour.

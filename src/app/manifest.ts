@@ -6,8 +6,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Conjugaison",
-    short_name: "Conjugaison",
+    name: "Conjuju",
+    short_name: "Conjuju",
     description: "Treino diário de conjugação francesa",
     start_url: "/",
     display: "standalone",
