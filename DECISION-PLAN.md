@@ -51,6 +51,9 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 - Leaderboard / social.
 - Modo offline (Service Worker + cache).
 
+### Implementado recentemente
+- **Ilustração do cão na home** — `dog1.svg`, `dog2.svg`, `dog3.svg` em `public/`. Rotação diária via seed de data (mesma lógica LCG de `engine.ts`, inline em `page.tsx`). Elemento decorativo, `aria-hidden`, `w-40`, acima do bloco de status/CTA.
+
 ### Fora de escopo
 - App nativo (React Native / Flutter).
 - Exercícios além de conjugação (vocabulário, gramática geral).

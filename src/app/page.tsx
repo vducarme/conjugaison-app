@@ -258,6 +258,20 @@ export default function Home() {
       ? Math.round((progress.totalCorrect / progress.totalExercises) * 100)
       : null;
 
+    // [DECISÃO] Seed inline (não importa de engine.ts — funções são privadas ao módulo).
+    // Mesma lógica LCG de getDateSeed + seededRandom — garante mesmo cão o dia inteiro,
+    // muda automaticamente à meia-noite sem nenhuma lógica adicional.
+    const _dogSeed = (() => {
+      const now = new Date();
+      return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    })();
+    let _dogState = _dogSeed;
+    const _dogRand = () => {
+      _dogState = (_dogState * 1664525 + 1013904223) & 0xffffffff;
+      return (_dogState >>> 0) / 0xffffffff;
+    };
+    const dogIndex = Math.floor(_dogRand() * 3) + 1; // 1, 2 ou 3
+
     return (
       <div className="flex flex-col min-h-screen">
         {/* ── Header com logout ── */}
@@ -288,6 +302,17 @@ export default function Home() {
 
         {/* ── Contenu principal ── */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 animate-fade-in">
+          {/* [DECISÃO] Ilustração do cão — decorativa, âncora emocional (Peak-End Rule).
+              Rotação diária via seed de data: mesmo cão o dia inteiro, troca à meia-noite.
+              w-40 = 160px: visível sem competir com o CTA. <img> em vez de next/image —
+              SVGs line-art complexos não precisam de otimização de imagem rasterizada. */}
+          <img
+            src={`/dog${dogIndex}.svg`}
+            alt=""
+            aria-hidden="true"
+            className="w-40 h-auto mb-6 opacity-90"
+          />
+
           {/* [DECISÃO] Home neutra com CTA claro — Default Effect: ação principal é começar sessão */}
           <div className="mb-8 text-center w-full">
             <p className="text-sm text-ink-muted mb-1">
