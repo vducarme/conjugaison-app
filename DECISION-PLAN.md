@@ -42,10 +42,10 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 10. **Múltiplas sessões por dia** — Sem constraint `unique(user_id, date)` no DB.
 11. **Persistência** — Sessões salvas no Supabase, progresso calculado no client.
 12. **Retomada de sessão** — Sessão em andamento persistida em `localStorage`. Se o usuário sai (fecha aba, navega fora, recarrega) e volta, a home mostra "Reprendre" para retomar do exercício exato onde parou. Opção de descartar e começar nova sessão também disponível.
+13. **Seletor de tempos verbais** — Pills na home permitem escolher quais tempos treinar. Todos selecionados por padrão; mínimo de 1 obrigatório (último tempo não pode ser desmarcado). Seleção passada ao `generateDailyExercises` via `allowedTenses`; sessão mantém sempre 10 exercícios.
 
 ### Nice-to-have (não implementado ainda)
 - Google OAuth (código pronto, oculto).
-- Seleção de tempos verbais específicos para treinar.
 - Modo revisão (refazer exercícios errados).
 - Notificações push / lembretes.
 - Leaderboard / social.
@@ -89,6 +89,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 page.tsx (orquestrador)
 ├── AuthScreen              # Login/registro
 ├── Home view               # Estado neutro
+│   ├── TenseSelector       # Pills para selecionar tempos a treinar (todos por padrão)
 │   ├── "Reprendre"         # CTA primário se há sessão salva (localStorage)
 │   ├── "Commencer"         # CTA primário se não há sessão salva
 │   ├── BarChart3 → Dashboard
@@ -108,6 +109,8 @@ page.tsx (orquestrador)
 - **Elision francesa** — `h` tratado como vogal (h muet). Trade-off documentado: h aspiré (haïr, heurter) não tem elision mas são raros no banco atual.
 - **Sessão em andamento em localStorage** — Persistida a cada mudança de estado (exercício, resposta, índice). Chave inclui `userId` para não misturar contas. Ao restaurar, volta a `"answering"` (não restaura estado de feedback stale). Sessões completas são limpas automaticamente. Falha de localStorage é silenciosa — não quebra o app.
 - **Estrutura gramatical por tempo — estática, não gerada por IA** — Cada tempo verbal tem uma fórmula fixa definida no código (ex: passé composé = `avoir/être au présent + participe passé`). Aparece apenas no feedback de erro, acima da explicação da IA. Decisão: dado estático verificado > IA para regras gramaticais (IA pode alucinar terminações; a fórmula estrutural é invariável).
+- **Uso de cada tempo verbal — estático, não gerado por IA** — `TENSE_USAGE` no `FeedbackPanel` descreve quando cada tempo é usado na língua real (ex: imparfait = descrições, hábitos passados). Aparece no feedback de erro abaixo da estrutura gramatical. Mesma razão: dado pedagógico verificado > IA para regras invariáveis.
+- **Seleção de tempos por sessão** — `generateDailyExercises` aceita `allowedTenses?: Tense[]`. Se fornecido, distribui os 10 exercícios apenas entre os tempos selecionados (mantendo distribuição equilibrada dentro do pool). Se não fornecido, usa todos os tempos. Estado `selectedTenses` vive em `page.tsx` e é inicializado com todos os tempos.
 
 ---
 
@@ -145,7 +148,8 @@ page.tsx (orquestrador)
 - ProgressBar periférica (topo, discreta) — informa progresso sem pressionar.
 - Home neutra — sem bombardeio de métricas. Só CTA + info mínima (sessões hoje, precisão).
 - Sessão interrompida retomável — "Reprendre" na home. Sem perda de progresso, sem ansiedade.
-- **Estrutura gramatical no erro (chunking)** — Mostrar `auxiliaire + participe passé` antes da explicação da IA reduz carga cognitiva: o aprendiz ancora o erro numa regra antes de processar o detalhe contextual. Ordem: fórmula → depois explicação IA.
+- **Estrutura gramatical no erro (chunking)** — Mostrar `auxiliaire + participe passé` antes da explicação da IA reduz carga cognitiva: o aprendiz ancora o erro numa regra antes de processar o detalhe contextual. Ordem no erro: estrutura → quando usar → diagnóstico IA.
+- **TenseSelector na home (controle sem atrito)** — Pills compactas com todos os tempos selecionados por padrão. Usuário que não quer configurar nada ignora e clica "Commencer". Usuário que quer focar num tempo específico ajusta sem sair da tela.
 
 **5. Estado padrão (Default Effect)**
 - Home abre com CTA "Commencer" — a ação padrão é começar a sessão, não navegar.
