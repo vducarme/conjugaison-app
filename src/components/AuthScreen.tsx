@@ -5,10 +5,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+const DOG_ILLUSTRATIONS = ["/dog1.svg", "/dog2.svg", "/dog3.svg"] as const;
 
 interface AuthScreenProps {
   onAuthSuccess: () => void;
@@ -21,6 +23,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  // [DECISAO] Sorteio unico por montagem da tela de auth - randomiza a ilustracao sem trocar durante re-render
+  const heroIllustration = useMemo(() => {
+    return DOG_ILLUSTRATIONS[Math.floor(Math.random() * DOG_ILLUSTRATIONS.length)];
+  }, []);
 
   // [DECISÃO] Google OAuth via Supabase redirect — fluxo padrão, zero config no client
   async function handleGoogleLogin() {
@@ -80,7 +86,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         {/* [DECISÃO] Ícone do cachorro/nuvem acima do título — ancoragem visual da marca antes do gate de auth */}
         <div className="flex justify-center mb-4">
           <Image
-            src="/home-icon.png"
+            src={heroIllustration}
             alt="Conjuju"
             width={96}
             height={96}
