@@ -258,19 +258,20 @@ export default function Home() {
       ? Math.round((progress.totalCorrect / progress.totalExercises) * 100)
       : null;
 
-    // [DECISÃO] Seed inline (não importa de engine.ts — funções são privadas ao módulo).
-    // Mesma lógica LCG de getDateSeed + seededRandom — garante mesmo cão o dia inteiro,
-    // muda automaticamente à meia-noite sem nenhuma lógica adicional.
-    const _dogSeed = (() => {
+    // [DECISAO] Rotacao diaria com hash da data local - continua estavel por dia,
+    // mas evita o viés do primeiro valor do LCG com seeds sequenciais, que estava
+    // prendendo quase todas as datas no mesmo cachorro.
+    const dogIndex = (() => {
       const now = new Date();
-      return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+      const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+        now.getDate(),
+      ).padStart(2, "0")}`;
+      let hash = 0;
+      for (let i = 0; i < dateKey.length; i += 1) {
+        hash = (hash * 31 + dateKey.charCodeAt(i)) >>> 0;
+      }
+      return (hash % 3) + 1;
     })();
-    let _dogState = _dogSeed;
-    const _dogRand = () => {
-      _dogState = (_dogState * 1664525 + 1013904223) & 0xffffffff;
-      return (_dogState >>> 0) / 0xffffffff;
-    };
-    const dogIndex = Math.floor(_dogRand() * 3) + 1; // 1, 2 ou 3
 
     return (
       <div className="flex flex-col min-h-screen">

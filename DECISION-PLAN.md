@@ -52,7 +52,7 @@ App de treino de conjugação francesa com missões diárias de 10 verbos, expli
 - Modo offline (Service Worker + cache).
 
 ### Implementado recentemente
-- **Ilustração do cão na home** — `dog1.svg`, `dog2.svg`, `dog3.svg` em `public/`. Rotação diária via seed de data (mesma lógica LCG de `engine.ts`, inline em `page.tsx`). Elemento decorativo, `aria-hidden`, `w-40`, acima do bloco de status/CTA.
+- **Ilustração do cão na home** — `dog1.svg`, `dog2.svg`, `dog3.svg` em `public/`. Rotação diária determinística por hash da data local em `page.tsx` (não mais pelo primeiro valor do LCG). Razão: o LCG com seeds de datas sequenciais estava enviesando a escolha e repetindo o mesmo cão em dias diferentes. Elemento decorativo, `aria-hidden`, `w-40`, acima do bloco de status/CTA.
 - **Ilustração da tela de auth** — `AuthScreen` agora sorteia entre `dog1.svg`, `dog2.svg` e `dog3.svg` na montagem do componente via `useMemo`. Razão: a tela inicial de login/cadastro estava presa em `home-icon.png`, então a randomização combinada nunca aparecia ali.
 
 ### Fora de escopo
